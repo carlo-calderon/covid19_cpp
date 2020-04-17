@@ -18,24 +18,12 @@ void matrix2Table(const std::string& filename_in, const std::string& row_name,
 	}
 	f_out.close();
 }
-/*def matrix2Table(filename_in, row_name, column_name, value_name, filename_out) :
-	f_writer = open(filename_out, 'w', newline = '', encoding = 'utf-8')
-	writer = csv.writer(f_writer)
-	writer.writerow([row_name, column_name, value_name])
-	with open(filename_in, newline = '', encoding = 'utf-8') as f :
-reader = csv.DictReader(f)
-for row in reader :
-if not(row_name in row.keys()) :
-	continue
-	for key in row.keys() :
-		if key == row_name :
-			continue
-			writer.writerow([row[row_name], key, row[key]])
-			f_writer.close()*/
 
 int main(int argc, char* argv[]) {
 	std::string path_products = "G:/Mi unidad/scripts/covid19/COVID19-Chile/output/";
 	matrix2Table(path_products + "producto9/HospitalizadosUCIEtario.csv", "Grupo de edad", "Fecha", "UCI",
 		"./temp/HospitalizadosUCIEtario.csv");
+	matrix2Table(path_products + "producto10/FallecidosEtario.csv", "Grupo de edad", "Fecha", "Fallecidos",
+		"./temp/FallecidosEtario.csv");
 	return 0;
 }
