@@ -32,6 +32,7 @@ void matrix2Table(const std::string& filename_in, const std::string& row_name,
 void fillDataDetail(const std::string& filename, DataCovid& data, const std::string& fecha, const Tags& tags) {
 	std::cout << fecha << ", " << filename << std::endl;
 	rapidcsv::Document doc(filename);
+	std::vector<std::string> columnNames = doc.GetColumnNames();
 	for (size_t i = 0; i < doc.GetRowCount(); ++i) {
 		std::string region = doc.GetRowName(i);
 		if (region == "Total")
@@ -43,8 +44,12 @@ void fillDataDetail(const std::string& filename, DataCovid& data, const std::str
 			data[region].insert({ fecha, DataDetail(data_empty) });
 		}
 		for (Tags::const_iterator it = tags.cbegin(); it != tags.cend(); ++it) {
-
-			//if(doc.GetCell())
+			if (std::find(columnNames.begin(), columnNames.end(), it->first) != columnNames.end()) {
+				if (doc.GetCell<std::string>(it->first, region).length() > 0) {
+					int cell = doc.GetCell<int>(it->first, region);
+					data[region][fecha][it->second] = cell;
+				}
+			}
 		}
 	}
 }
