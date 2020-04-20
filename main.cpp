@@ -118,6 +118,8 @@ int main(int argc, char* argv[]) {
 	std::vector<std::string> row_names = { "Grupo de edad", "Sexo" };
 	matrix2Table(path_products + "producto16/CasosGeneroEtario.csv", row_names, "Fecha", "Cases",
 		"./temp/CasosGeneroEtario.csv");
+	matrix2Table(path_products + "producto20/NumeroVentiladores.csv", "Ventiladores", "Fecha", "Cantidad",
+		"./temp/NumeroVentiladores.csv");
 
 	Tags tags = {
 		{"Casos totales", "cases_acc"},

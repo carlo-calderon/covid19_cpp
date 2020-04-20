@@ -263,4 +263,5 @@ rapidcsv/
 temp/HospitalizadosUCIEtario.csv
 temp/FallecidosEtario.csv
 output/covid19_cl.csv
-output/covid19_cl.csv
+temp/NumeroVentiladores.csv
+temp/CasosGeneroEtario.csv
