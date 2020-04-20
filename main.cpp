@@ -35,7 +35,7 @@ void fillDataDetail(const std::string& filename, DataCovid& data, const std::str
 	std::vector<std::string> columnNames = doc.GetColumnNames();
 	for (size_t i = 0; i < doc.GetRowCount(); ++i) {
 		std::string region = doc.GetRowName(i);
-		if (region == "Total")
+		if (region.length()==0 || region == "Total")
 			continue;
 		if (data.count(region) == 0) {
 			data.insert({ region, DataRegion()});
@@ -50,6 +50,32 @@ void fillDataDetail(const std::string& filename, DataCovid& data, const std::str
 					data[region][fecha][it->second] = cell;
 				}
 			}
+		}
+	}
+}
+/*
+def fillDifferences(data, column, column_dif, prev_date = prevDate) :
+	for country in data.keys() :
+		for f in data[country].keys() :
+			#print(country, f)
+			f_ant = prev_date(f)
+			if not(f_ant in data[country].keys()) :
+				data[country][f][column_dif] = data[country][f][column]
+			else:
+data[country][f][column_dif] = data[country][f][column] - data[country][f_ant][column]
+return data
+*/
+void fillDifferences(DataCovid& data, const std::string& column, const std::string& column_dif) {
+	for (DataCovid::iterator it_r = data.begin(); it_r != data.end(); ++it_r) {
+		std::string region = it_r->first;
+		for (DataRegion::iterator it_d = it_r->second.begin(); it_d != it_r->second.end(); ++it_d) {
+			DataRegion::iterator it_d_ant = it_d;
+			it_d_ant--;
+			if (it_d == it_r->second.begin())
+				continue;
+			int data_actual = it_d->second[column];
+			int data_ant = it_d_ant->second[column];
+			it_d->second[column_dif] = data_actual - data_ant;
 		}
 	}
 }
@@ -71,31 +97,8 @@ void writeDataCovid(const std::string& filename, DataCovid& data) {
 	}
 	f_out.close();
 }
-/*
-	with open(filename, newline='', encoding='utf-8') as f:
-		reader = csv.DictReader(f)
-		for row in reader:
-			try:
-				if not(row['Region'] in data_cl.keys()):
-					if row['Region'] == 'Total':
-						continue
-					data_cl[row['Region']] = dict()
-				if not(fecha in data_cl[row['Region']].keys()):
-					data_cl[row['Region']][fecha] = dict(data_empty)
-				for tag in tags:
-					if tag in row.keys():
-						if len(row[tag])>0:
-							n=int(row[tag])
-						else:
-							n=0
-						data_cl[row['Region']][fecha][tags[tag]] = n
-			except:
-				print('ERROR:', row.keys())*/
-				/*for f in listdir(path_p4) :
-	fecha = f[0:10]
-	print(f, fecha)
-	fillDataDetalleCl(path_p4 + f, data_cl, fecha,
-		{ 'Casos totales': 'cases_acc', 'Fallecidos' : 'deaths_acc', 'Casos recuperados' : 'recovered_acc' })*/
+
+
 int main(int argc, char* argv[]) {
 	std::string path_products = "G:/Mi unidad/scripts/covid19/COVID19-Chile/output/";
 	matrix2Table(path_products + "producto9/HospitalizadosUCIEtario.csv", "Grupo de edad", "Fecha", "UCI",
