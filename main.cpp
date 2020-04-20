@@ -15,6 +15,7 @@ typedef std::map<std::string, std::string> Tags;
 DataDetail data_empty = { {"cases", 0}, {"deaths", 0}, {"recovered", 0}, {"cases_acc", 0}, {"deaths_acc", 0},
 {"recovered_acc", 0}, {"pcr", 0}, {"uci", 0} };
 
+/* Transforma un csv de matriz en un csv de tabla, la tabla es el prodcuto cruz entre la primera columna y la primera fila*/
 void matrix2Table(const std::string& filename_in, const std::string& row_name,
 	const std::string& column_name, const std::string& value_name, const std::string& filename_out) {
 	rapidcsv::Document doc(filename_in);
@@ -24,6 +25,27 @@ void matrix2Table(const std::string& filename_in, const std::string& row_name,
 	for (size_t i = 0; i < doc.GetRowCount(); ++i) {
 		for (size_t j = 0; j < doc.GetColumnCount(); ++j) {
 			f_out << doc.GetRowName(i) << "," << doc.GetColumnName(j) << "," << doc.GetCell<std::string>(j, i) << std::endl;
+		}
+	}
+	f_out.close();
+}
+/* Transforma un csv de matriz en un csv de tabla, la tabla es el prodcuto cruz entre la primeras columnas que estan en la lista columnames y la primera fila*/
+void matrix2Table(const std::string& filename_in, const std::vector<std::string>& row_names,
+	const std::string& column_name, const std::string& value_name, const std::string& filename_out) {
+	rapidcsv::Document doc(filename_in);
+	std::ofstream f_out(filename_out);
+	std::vector<std::string> header = doc.GetColumnNames();
+	for (size_t i = 0; i < row_names.size(); ++i)
+		f_out << row_names[i] << ",";
+	f_out << column_name << "," << value_name << std::endl;
+	for (size_t i = 0; i < doc.GetRowCount(); ++i) {
+		for (size_t j = 0; j < doc.GetColumnCount(); ++j) {
+			if (j < row_names.size() - 1)
+				continue;
+			f_out << doc.GetRowName(i) << ",";
+			for (size_t ir = 1; ir < row_names.size(); ++ir)
+				f_out << doc.GetCell<std::string>(ir - 1, i) << ",";
+			f_out << doc.GetColumnName(j) << "," << doc.GetCell<std::string>(j, i) << std::endl;
 		}
 	}
 	f_out.close();
@@ -93,6 +115,9 @@ int main(int argc, char* argv[]) {
 		"./temp/HospitalizadosUCIEtario.csv");
 	matrix2Table(path_products + "producto10/FallecidosEtario.csv", "Grupo de edad", "Fecha", "Fallecidos",
 		"./temp/FallecidosEtario.csv");
+	std::vector<std::string> row_names = { "Grupo de edad", "Sexo" };
+	matrix2Table(path_products + "producto16/CasosGeneroEtario.csv", row_names, "Fecha", "Cases",
+		"./temp/CasosGeneroEtario.csv");
 
 	Tags tags = {
 		{"Casos totales", "cases_acc"},
@@ -104,8 +129,10 @@ int main(int argc, char* argv[]) {
 		std::string fecha = it.path().filename().string().substr(0, 10);
 		fillDataDetail(it.path().string(), data_cl, fecha, tags);
 	}
-
+	
 	fillDifferences(data_cl, "cases_acc", "cases");
+	fillDifferences(data_cl, "deaths_acc", "deaths");
+	fillDifferences(data_cl, "recovered_acc", "recovered");
 
 	writeDataCovid("./output/covid19_cl.csv", data_cl);
 
