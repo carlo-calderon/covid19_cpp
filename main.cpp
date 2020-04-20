@@ -53,18 +53,7 @@ void fillDataDetail(const std::string& filename, DataCovid& data, const std::str
 		}
 	}
 }
-/*
-def fillDifferences(data, column, column_dif, prev_date = prevDate) :
-	for country in data.keys() :
-		for f in data[country].keys() :
-			#print(country, f)
-			f_ant = prev_date(f)
-			if not(f_ant in data[country].keys()) :
-				data[country][f][column_dif] = data[country][f][column]
-			else:
-data[country][f][column_dif] = data[country][f][column] - data[country][f_ant][column]
-return data
-*/
+
 void fillDifferences(DataCovid& data, const std::string& column, const std::string& column_dif) {
 	for (DataCovid::iterator it_r = data.begin(); it_r != data.end(); ++it_r) {
 		std::string region = it_r->first;
@@ -98,7 +87,6 @@ void writeDataCovid(const std::string& filename, DataCovid& data) {
 	f_out.close();
 }
 
-
 int main(int argc, char* argv[]) {
 	std::string path_products = "G:/Mi unidad/scripts/covid19/COVID19-Chile/output/";
 	matrix2Table(path_products + "producto9/HospitalizadosUCIEtario.csv", "Grupo de edad", "Fecha", "UCI",
@@ -116,6 +104,8 @@ int main(int argc, char* argv[]) {
 		std::string fecha = it.path().filename().string().substr(0, 10);
 		fillDataDetail(it.path().string(), data_cl, fecha, tags);
 	}
+
+	fillDifferences(data_cl, "cases_acc", "cases");
 
 	writeDataCovid("./output/covid19_cl.csv", data_cl);
 
