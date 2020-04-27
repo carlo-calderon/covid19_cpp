@@ -110,7 +110,7 @@ void writeDataCovid(const std::string& filename, DataCovid& data) {
 }
 
 int main(int argc, char* argv[]) {
-	std::string path_products = "G:/Mi unidad/scripts/covid19/COVID19-Chile/output/";
+	std::string path_products = "C:/Users/Carlo/scripts/covid19/COVID19-Chile/output/";
 	matrix2Table(path_products + "producto9/HospitalizadosUCIEtario.csv", "Grupo de edad", "Fecha", "UCI",
 		"./temp/HospitalizadosUCIEtario.csv");
 	matrix2Table(path_products + "producto10/FallecidosEtario.csv", "Grupo de edad", "Fecha", "Fallecidos",
@@ -127,8 +127,11 @@ int main(int argc, char* argv[]) {
 		{"Casos recuperados", "recovered_acc" } };
 	DataCovid data_cl;
 
-	for (auto& it : fs::directory_iterator("G:/Mi unidad/scripts/covid19/tmp/cl_producto4/")) {
-		std::string fecha = it.path().filename().string().substr(0, 10);
+	for (auto& it : fs::directory_iterator("C:/Users/Carlo/scripts/covid19/tmp/cl_producto4/")) {
+		std::string filename = it.path().filename().string();
+		if (filename.length() < 10 || filename.substr(0, 3) != "202")
+			continue;
+		std::string fecha = filename.substr(0, 10);
 		fillDataDetail(it.path().string(), data_cl, fecha, tags);
 	}
 	
